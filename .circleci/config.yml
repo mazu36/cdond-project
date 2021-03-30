@@ -118,16 +118,18 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
-      # Restore from cache
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
       # Your job code here
 
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
-      # Restore from cache
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
       # Your job code here
 
   deploy-infrastructure:
@@ -242,23 +244,26 @@ jobs:
     docker:
       -image: alpine:latest 
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update curl
       - run:
           name: Get backend url
           command: |
             # your code here
+            echo 1
       - run:
           name: Backend smoke test.
           command: |
             # your code here
+            echo 1
       - run:
           name: Frontend smoke test.
           command: |
             # your code here
+            echo 1
       # Here's where you will add some code to rollback on failure  
 
   cloudfront-update:
