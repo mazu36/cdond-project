@@ -50,12 +50,6 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-      - run:
-          name: Audit if error
-          command: |
-            cd frontend
-            npm audit
-            when: on_fail
 
   build-backend:
     docker:
@@ -74,12 +68,6 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-      - run:
-          name: Audit if error
-          command: |
-            cd backend
-            npm audit
-            when: on_fail
             
   test-frontend:
     docker:
