@@ -134,6 +134,12 @@ jobs:
             - backend/package.json
             - backend/package-lock.json
           key: backend-build-5b
+      - run:
+          name: Back-end cat package.json
+          command: |
+            cd ~/project/backend
+            ls -l
+            cat package.json
 
 
   deploy-infrastructure:
