@@ -126,8 +126,8 @@ jobs:
             cd ~/project/backend
             ls -l
             echo "Audit:"
+            npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
-            #npm audit fix --audit-level=critical --force
             ls -l
       - save_cache:
           paths: 
