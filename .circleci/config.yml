@@ -57,7 +57,7 @@ jobs:
             echo "2 package lock deleted"
             rm ~/project/frontend/package-lock.json
 
-            npm audit-fix
+            npm audit fix
 
             echo "3 package lock after audit fix"
             ls -l ~/project/frontend/package-lock.json
