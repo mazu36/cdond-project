@@ -96,8 +96,7 @@ jobs:
           command: |
              cd ~/project/backend
              npm run test
-
-            
+       
   scan-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -112,19 +111,6 @@ jobs:
             echo "Audit:"
             npm audit --audit-level=critical
             
-      - run:
-          name: Front-end scan If error
-          command: |
-            cd ~/project/frontend 
-            echo "Audit fix if error:"
-            npm audit fix --audit-level=critical --force
-            echo "1 New version package front end"
-            cat package.json
-            echo "2 New version package-lock front end"
-            cat package-lock.json
-            when: on_fail
-            
-
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -135,22 +121,17 @@ jobs:
       - run:
           name: Back-end scan
           command: |
-             cd ~/project/backend
-             #echo "Fix audit critical:"
-             #npm audit fix --audit-level=critical --force
-             echo "Audit:"
-             npm audit --audit-level=critical
-      - run:
-          name: Back-end scan If error
-          command: |
-            cd ~/project/backend 
+            cd ~/project/backend
+            ls -l
+            #echo "Audit:"
+            #npm audit --audit-level=critical
             echo "Audit fix if error:"
             npm audit fix --audit-level=critical --force
             echo "1 New version package back end"
             cat package.json
             echo "2 New version package-lock back end"
             cat package-lock.json
-            when: on_fail
+            ls -l
 
   deploy-infrastructure:
     docker:
