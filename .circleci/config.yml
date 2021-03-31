@@ -44,11 +44,13 @@ jobs:
           name: Build front-end
           command: |
             cd ~/project/frontend
-            echo "checking BEFORE install"
-            find node_modules/ -type d -name 'oauth*'
             npm install
 
-            echo "1 package lock after install"
+            echo "checking AFTER install"
+            find node_modules/ -type d -name 'oauth*'
+            npm run build
+
+            echo "1 package lock after build"
             ls -l ~/project/frontend/package-lock.json
             cat ~/project/frontend/package-lock.json
 
@@ -60,11 +62,9 @@ jobs:
             echo "3 package lock after audit fix"
             ls -l ~/project/frontend/package-lock.json
             cat ~/project/frontend/package-lock.json
-            
+
             ls -l ~/project/frontend/
-            echo "checking AFTER install"
-            find node_modules/ -type d -name 'oauth*'
-            npm run build
+
       - save_cache:
           paths: 
             - frontend/node_modules
