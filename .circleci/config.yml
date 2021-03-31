@@ -44,11 +44,17 @@ jobs:
           name: Build front-end
           command: |
             cd ~/project/frontend
+            echo "checking BEFORE install"
+            find node_modules/ -type d -name 'oauth*'
             npm install
+            echo "checking AFTER install"
+            find node_modules/ -type d -name 'oauth*'
             npm run build
       - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-build
+          paths: 
+            - [frontend/node_modules]
+            - [frontend/dist]
+          key: frontend-build-2
 
   build-backend:
     docker:
