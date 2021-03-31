@@ -39,22 +39,26 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontend-build_new]
       - run:
           name: Build front-end
           command: |
             cd ~/project/frontend
+            rm ~/project/frontend/package-lock.json
+            rm -r ~/project/node_modules
             echo "checking BEFORE install"
             find node_modules/ -type d -name 'oauth*'
             npm install
+            npm audit-fix
+            cat ~/project/frontend/package-lock.json
+            ls -l ~/project/frontend/
             echo "checking AFTER install"
             find node_modules/ -type d -name 'oauth*'
             npm run build
       - save_cache:
           paths: 
             - frontend/node_modules
-            - frontend/dist
-          key: frontend-build-2
+          key: frontend-build-new
 
   build-backend:
     docker:
@@ -79,7 +83,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontend-build_new]
       - run:
           name: Test front-end
           command: |
@@ -112,12 +116,14 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontend-build_new]
       - run:
           name: Front-end scan
           command: |
             cd ~/project/frontend 
+            echo "Audit:"
             npm audit --audit-level=critical
+            
 
   scan-backend:
     docker:
@@ -130,6 +136,9 @@ jobs:
           name: Back-end scan
           command: |
              cd ~/project/backend
+             echo "Fix audit critical:"
+             npm audit fix --audit-level=critical --force
+             echo "Audit:"
              npm audit --audit-level=critical
 
   deploy-infrastructure:
