@@ -60,16 +60,19 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build]
+          keys: [backend-build-1]
       - run:
           name: Back-end build
           command: |
              cd ~/project/backend
+             ls -l
              npm install
+             ls -l
              npm run build
+             ls -l
       - save_cache:
           paths: [backend/node_modules]
-          key: backend-build
+          key: backend-build-1
             
   test-frontend:
     docker:
@@ -90,7 +93,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build]
+          keys: [backend-build-1]
       - run:
           name: Back-end test
           command: |
@@ -117,12 +120,16 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build]
+          keys: [backend-build-1]
       - run:
           name: Back-end scan
           command: |
             cd ~/project/backend
             ls -l
+            echo "1 cache version package back end"
+            cat package.json
+            echo "2 cache version package-lock back end"
+            cat package-lock.json
             #echo "Audit:"
             #npm audit --audit-level=critical
             echo "Audit fix if error:"
