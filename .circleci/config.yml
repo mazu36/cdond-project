@@ -59,7 +59,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-3]
+          keys: [backend-build-5a, backend-build-5b]
       - run:
           name: Back-end build
           command: |
@@ -68,8 +68,10 @@ jobs:
              npm run build
              ls -l
       - save_cache:
-          paths: [backend/node_modules]
-          key: backend-build-3
+          paths: 
+            - backend/node_modules
+            - backend/dist
+          key: [backend-build-5a, backend-build-5b]
             
   test-frontend:
     docker:
@@ -90,7 +92,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-3]
+          keys: [backend-build-5a, backend-build-5b]
       - run:
           name: Back-end test
           command: |
@@ -117,16 +119,21 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-3]
+          keys: [backend-build-5a,backend-build-5b ]
       - run:
           name: Back-end scan
           command: |
             cd ~/project/backend
             ls -l
             echo "Audit:"
-            npm audit --audit-level=critical
-            #npm audit fix --audit-level=critical --force
+            #npm audit --audit-level=critical
+            npm audit fix --audit-level=critical --force
             ls -l
+      - save_cache:
+          paths: 
+            - backend/package.json
+            - backend/package-lock.json
+          key: backend-build-5b
 
 
   deploy-infrastructure:
