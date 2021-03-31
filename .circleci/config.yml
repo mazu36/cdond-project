@@ -71,7 +71,7 @@ jobs:
           paths: 
             - backend/node_modules
             - backend/dist
-          key: [backend-build-5a, backend-build-5b]
+          key: backend-build-5a
             
   test-frontend:
     docker:
