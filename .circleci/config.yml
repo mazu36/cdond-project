@@ -57,12 +57,16 @@ jobs:
             echo "2 package lock deleted"
             rm ~/project/frontend/package-lock.json
 
-            npm audit fix
+            #npm audit fix
+            npm i --package-lock-only
 
             echo "3 package lock after audit fix"
             ls -l ~/project/frontend/package-lock.json
             cat ~/project/frontend/package-lock.json
 
+            ls -l ~/project/frontend/
+
+            npm audit fix
             ls -l ~/project/frontend/
 
       - save_cache:
@@ -141,8 +145,8 @@ jobs:
           name: Back-end scan
           command: |
              cd ~/project/backend
-             echo "Fix audit critical:"
-             npm audit fix --audit-level=critical --force
+             #echo "Fix audit critical:"
+             #npm audit fix --audit-level=critical --force
              echo "Audit:"
              npm audit --audit-level=critical
 
