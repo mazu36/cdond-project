@@ -44,13 +44,23 @@ jobs:
           name: Build front-end
           command: |
             cd ~/project/frontend
-            rm ~/project/frontend/package-lock.json
-            rm -r ~/project/frontend/node_modules
             echo "checking BEFORE install"
             find node_modules/ -type d -name 'oauth*'
             npm install
-            npm audit-fix
+
+            echo "1 package lock after install"
+            ls -l ~/project/frontend/package-lock.json
             cat ~/project/frontend/package-lock.json
+
+            echo "2 package lock deleted"
+            rm ~/project/frontend/package-lock.json
+
+            npm audit-fix
+
+            echo "3 package lock after audit fix"
+            ls -l ~/project/frontend/package-lock.json
+            cat ~/project/frontend/package-lock.json
+            
             ls -l ~/project/frontend/
             echo "checking AFTER install"
             find node_modules/ -type d -name 'oauth*'
@@ -90,9 +100,6 @@ jobs:
           command: |
             cd ~/project/frontend 
             npm run test
-            npm run test:watch
-            npm run pretest:cov
-            npm run test:cov
                 
   test-backend:
     docker:
@@ -106,9 +113,6 @@ jobs:
           command: |
              cd ~/project/backend
              npm run test
-             npm run test:watch
-             npm run test:cov
-             npm run test:e2e
 
             
   scan-frontend:
