@@ -39,13 +39,13 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build_new]
+          keys: [frontend-build_3]
       - run:
           name: Build front-end
           command: |
             cd ~/project/frontend
             rm ~/project/frontend/package-lock.json
-            rm -r ~/project/node_modules
+            rm -r ~/project/frontend/node_modules
             echo "checking BEFORE install"
             find node_modules/ -type d -name 'oauth*'
             npm install
@@ -58,7 +58,8 @@ jobs:
       - save_cache:
           paths: 
             - frontend/node_modules
-          key: frontend-build-new
+            - frontend/dist
+          key: frontend-build-3
 
   build-backend:
     docker:
@@ -83,7 +84,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build_new]
+          keys: [frontend-build_3]
       - run:
           name: Test front-end
           command: |
@@ -116,7 +117,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build_new]
+          keys: [frontend-build_3]
       - run:
           name: Front-end scan
           command: |
