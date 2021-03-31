@@ -39,41 +39,20 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build_3]
+          keys: [frontend-build-4]
       - run:
           name: Build front-end
           command: |
             cd ~/project/frontend
             npm install
-
-            echo "checking AFTER install"
-            find node_modules/ -type d -name 'oauth*'
             npm run build
-
-            echo "1 package lock after build"
-            ls -l ~/project/frontend/package-lock.json
-            cat ~/project/frontend/package-lock.json
-
-            echo "2 package lock deleted"
-            rm ~/project/frontend/package-lock.json
-
-            #npm audit fix
-            npm i --package-lock-only
-
-            echo "3 package lock after audit fix"
-            ls -l ~/project/frontend/package-lock.json
-            cat ~/project/frontend/package-lock.json
-
-            ls -l ~/project/frontend/
-
-            npm audit fix
-            ls -l ~/project/frontend/
+            ls -l frontend/dist
 
       - save_cache:
           paths: 
             - frontend/node_modules
             - frontend/dist
-          key: frontend-build-3
+          key: frontend-build-4
 
   build-backend:
     docker:
@@ -98,7 +77,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build_3]
+          keys: [frontend-build-4]
       - run:
           name: Test front-end
           command: |
@@ -125,13 +104,20 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build_3]
+          keys: [frontend-build-4]
       - run:
           name: Front-end scan
           command: |
             cd ~/project/frontend 
             echo "Audit:"
             npm audit --audit-level=critical
+      - run:
+          name: Front-end scan If error
+          command: |
+            cd ~/project/frontend 
+            echo "Audit fix if error:"
+            npm audit fix --audit-level=critical --force
+            when: on_fail
             
 
   scan-backend:
