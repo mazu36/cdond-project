@@ -46,7 +46,7 @@ jobs:
             cd ~/project/frontend
             npm install
             npm run build
-            ls -l frontend/dist
+            ls -l 
 
       - save_cache:
           paths: 
@@ -111,12 +111,17 @@ jobs:
             cd ~/project/frontend 
             echo "Audit:"
             npm audit --audit-level=critical
+            
       - run:
           name: Front-end scan If error
           command: |
             cd ~/project/frontend 
             echo "Audit fix if error:"
             npm audit fix --audit-level=critical --force
+            echo "1 New version package front end"
+            cat package.json
+            echo "2 New version package-lock front end"
+            cat package-lock.json
             when: on_fail
             
 
@@ -135,6 +140,17 @@ jobs:
              #npm audit fix --audit-level=critical --force
              echo "Audit:"
              npm audit --audit-level=critical
+      - run:
+          name: Back-end scan If error
+          command: |
+            cd ~/project/backend 
+            echo "Audit fix if error:"
+            npm audit fix --audit-level=critical --force
+            echo "1 New version package back end"
+            cat package.json
+            echo "2 New version package-lock back end"
+            cat package-lock.json
+            when: on_fail
 
   deploy-infrastructure:
     docker:
