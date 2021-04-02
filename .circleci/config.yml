@@ -59,7 +59,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-5a]
+          keys: [backend-build-6a, backend-build-6b]
       - run:
           name: Back-end build
           command: |
@@ -71,7 +71,7 @@ jobs:
           paths: 
             - backend/node_modules
             - backend/dist
-          key: backend-build-5a
+          key: backend-build-6a
             
   test-frontend:
     docker:
@@ -92,7 +92,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-5a, backend-build-5b]
+          keys: [backend-build-6a, backend-build-6b]
       - run:
           name: Back-end test
           command: |
@@ -119,7 +119,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-5a,backend-build-5b ]
+          keys: [backend-build-6a,backend-build-6b ]
       - run:
           name: Back-end scan
           command: |
@@ -133,7 +133,7 @@ jobs:
           paths: 
             - backend/package.json
             - backend/package-lock.json
-          key: backend-build-5b
+          key: backend-build-6b
       - run:
           name: Back-end cat package.json
           command: |
