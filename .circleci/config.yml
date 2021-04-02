@@ -140,6 +140,7 @@ jobs:
             cd ~/project/backend
             ls -l
             cat package.json
+            echo "fin"
 
 
   deploy-infrastructure:
