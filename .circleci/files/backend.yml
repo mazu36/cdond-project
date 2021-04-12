@@ -7,7 +7,7 @@ Parameters:
     Type: String
 
 Resources:
-  InstanceSecurityGroup2:
+  InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: !Sub UdaPeople-${ID}
