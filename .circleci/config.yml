@@ -154,16 +154,16 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=udapeople \
-              --stack-name "BE-prod-${CIRCLE_WORKFLOW_ID}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
+              --stack-name "BE-prod-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=udapeople \
-              --stack-name "FE-prod-${CIRCLE_WORKFLOW_ID}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
+              --stack-name "FE-prod-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
       - run:
           name: Cache PublicDnsName using MemStash
           command: |
@@ -171,11 +171,11 @@ jobs:
             PublicDnsName_val=$( 
               aws ec2 describe-instances  \
               --query 'Reservations[*].Instances[*].PublicDnsName' \
-              --filters "Name=tag:project,Values=udacity" \
+              --filters "Name=tag:project,Values=udapeople" \
               --output text )
             echo "Value PublicDnsName is: ${PublicDnsName_val}"
             echo "put the DNS value into web service memStash:"
-            curl -H "Content-Type: text/plain" -H "token: ${WorkflowID}" \
+            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request PUT \
               --data ${PublicDnsName_val} https://api.memstash.io/values/PublicDnsName_key
             echo "End getting PublicDnsName into cache"
