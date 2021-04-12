@@ -147,30 +147,46 @@ jobs:
     docker:
       - image: amazon/aws-cli 
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              #--tags project=your-tag \
-              # --stack-name "your back-end stack name with workflow id" \
-              # --parameter-overrides ID="your workflow id"  
-              exit 1
+              --tags project=udapeople \
+              --stack-name "BE-prod-${WorkflowID}" \
+              --parameter-overrides ID="${WorkflowID}"
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              #--tags project=your-tag \
-              # --stack-name "your front-end stack name with workflow id" \
-              # --parameter-overrides ID="your workflow id"  
-              exit 1
+              --tags project=udapeople \
+              --stack-name "FE-prod-${WorkflowID}" \
+              --parameter-overrides ID="${WorkflowID}"  
+      - run:
+          name: Cache PublicDnsName using MemStash
+          command: |
+            echo "Get value:"
+            PublicDnsName_val=$( 
+              aws ec2 describe-instances  \
+              --query 'Reservations[*].Instances[*].PublicDnsName' \
+              --filters "Name=tag:project,Values=udacity" \
+              --output text )
+            echo "Value PublicDnsName is: ${PublicDnsName_val}"
+            echo "put the DNS value into web service memStash:"
+            curl -H "Content-Type: text/plain" -H "token: ${WorkflowID}" \
+              --request PUT \
+              --data ${PublicDnsName_val} https://api.memstash.io/values/PublicDnsName_key
+            echo "End getting PublicDnsName into cache"
+
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            # Your code here
-            exit 1
+            aws ec2 describe-instances  \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --output text >> project/.circleci/ansible/inventory.txt
+
       - persist_to_workspace:
           root: ~/
           paths:
