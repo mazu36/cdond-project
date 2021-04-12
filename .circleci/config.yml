@@ -154,16 +154,16 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=udapeople \
-              --stack-name "BE-prod-${WorkflowID}" \
-              --parameter-overrides ID="${WorkflowID}"
+              --stack-name "BE-prod-${CIRCLE_WORKFLOW_ID}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=udapeople \
-              --stack-name "FE-prod-${WorkflowID}" \
-              --parameter-overrides ID="${WorkflowID}"  
+              --stack-name "FE-prod-${CIRCLE_WORKFLOW_ID}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
       - run:
           name: Cache PublicDnsName using MemStash
           command: |
