@@ -185,31 +185,34 @@ jobs:
           command: |
             aws ec2 describe-instances  \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --output text >> project/.circleci/ansible/inventory.txt
+            --output text >> ~/project/.circleci/ansible/inventory.txt
 
       - persist_to_workspace:
-          root: ~/
+          root: ~/project/
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - .circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure      
 
   configure-infrastructure:
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      # Checkout code from git
-      # Add ssh keys with fingerprint
-      # attach workspace
+      - checkout
+      - add_ssh_keys:
+          fingerprints: [SHA256:6jH3EBjtjp0NvU71iZmxCN/5DXFNNNnncDZwwtkEboc]
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
           name: Install dependencies
           command: |
-            # Your code here
-            exit 1
+            apk add --update ansible
+            
       - run:
           name: Configure server
           command: |
-            # Your code here
-            exit 1
+            ansible-playbook -i /tmp/workspace/inventory.txt \
+              .circleci/ansible/configure-server.yml 
+            
       # Here's where you will add some code to rollback on failure      
 
   run-migrations:
