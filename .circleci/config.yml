@@ -209,7 +209,7 @@ jobs:
       - add_ssh_keys:
           fingerprints: [SHA256:L2XDt48aVVZpfT7DsQ6+RY6V5XV0fqlRZ0/oEWvvkfM]
       - attach_workspace:
-          at: /tmp/workspace
+          at: ~/project/
       - run:
           name: Install dependencies
           command: |
@@ -218,8 +218,9 @@ jobs:
       - run:
           name: Configure server
           command: |
-            cat /tmp/workspace/inventory.txt
-            ansible-playbook -i /tmp/workspace/inventory.txt \
+            find . -name "inventory.txt"
+            cat ~/project/inventory.txt
+            ansible-playbook -i ~/project/inventory.txt \
               .circleci/ansible/configure-server.yml 
             
       # Here's where you will add some code to rollback on failure      
