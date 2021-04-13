@@ -47,6 +47,8 @@ jobs:
             npm install
             npm run build
             ls -l 
+            cd dist
+            ls -l
       - save_cache:
           paths: 
             - frontend/node_modules
@@ -204,10 +206,16 @@ jobs:
   configure-infrastructure:
     docker:
       - image: python:3.7-alpine3.11
+        environment:
+          TYPEORM_CONNECTION: $TYPEORM_CONNECTION
+          TYPEORM_HOST: $TYPEORM_HOST
+          TYPEORM_USERNAME: $TYPEORM_USERNAME
+          TYPEORM_PASSWORD: $TYPEORM_PASSWORD
+          TYPEORM_DATABASE: $TYPEORM_DATABASE
+          TYPEORM_MIGRATIONS: $TYPEORM_MIGRATIONS
+          TYPEORM_ENTITIES: $TYPEORM_ENTITIES
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints: [SHA256:L2XDt48aVVZpfT7DsQ6+RY6V5XV0fqlRZ0/oEWvvkfM]
       - attach_workspace:
           at: ~/project/
       - run:
@@ -229,47 +237,74 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
+      - checkout
+      - run:
+          name: install tar
+          command: |
+            yum -y install tar gzip
+      - restore_cache:
+          keys: [backend-build-6a,backend-build-6b ]
       - run:
           name: Run migrations
           command: |
-            # Your code here
-            exit 1
+            env
+            cd ~/project/backend
+            cat .env
+            npm run migrations > migrations_log.txt
       - run:
           name: Send migration results to memstash
           command: |
-            # Your code here
-            exit 1
+            echo "Get value:"
+            mig_result=$( grep -l "has been executed successfully" migrations_log.txt)
+            mig_val=$([ ! -z "$mig_result" ] && echo "1" || echo "0" )
+            echo "Value mig_val is: ${mig_val}"
+            echo "put the mig_val value into web service memStash:"
+            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
+              --request PUT \
+              --data ${mig_val} https://api.memstash.io/values/mig_key
+            
      # Here's where you will add some code to rollback on failure      
 
   deploy-frontend:
     docker:
       - image: amazon/aws-cli
     steps:
-      # Checkout code from git
+      - checkout 
       - run:
           name: Install dependencies
-          command: |
-            # your code here
+          command: | 
+            yum -y install tar gzip
+      - attach_workspace:
+          at: ~/project/
       - run:
           name: Get backend url
           command: |
-            # your code here
+            BACKEND_IP=$(head -2 ~/project/.circleci/ansible/inventory.txt |tail -1)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
       - run:
           name: Deploy frontend objects
           command: |
-            # your code here
+            npm run build
+      - run:
+          name: Deploy frontend objects
+            command: |
+            aws s3 sync ./dist s3://"prd-${CIRCLE_WORKFLOW_ID:0:7}" --delete
+
       # Here's where you will add some code to rollback on failure      
                     
   deploy-backend:
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      # Checkout code from git
+      - checkout
       # Add ssh keys with fingerprint
-      # attach workspace
+      - run:
+          name: Install dependencies
+          command: | 
+            yum -y install tar gzip
+      - attach_workspace:
+          at: ~/project/
       - run:
           name: Install dependencies
           command: |
@@ -277,7 +312,7 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-            # your code here
+            aws s3 sync ./dist s3://"prd-${CIRCLE_WORKFLOW_ID:0:7}" --delete
       # Here's where you will add some code to rollback on failure  
 
   smoke-test:
