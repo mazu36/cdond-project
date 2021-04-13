@@ -46,8 +46,10 @@ jobs:
             cd ~/project/frontend
             npm install
             npm run build
+            echo "Current folder:"
             ls -l 
             cd dist
+            echo "dist folder:"
             ls -l
       - save_cache:
           paths: 
@@ -65,10 +67,14 @@ jobs:
       - run:
           name: Back-end build
           command: |
-             cd ~/project/backend
-             npm install
-             npm run build
-             ls -l
+            cd ~/project/backend
+            npm install
+            npm run build
+            echo "Current folder:"
+            ls -l 
+            cd dist
+            echo "dist folder:"
+            ls -l
       - save_cache:
           paths: 
             - backend/node_modules
@@ -176,19 +182,21 @@ jobs:
               --filters "Name=tag:project,Values=udapeople" \
               --output text )
             echo "Value PublicDnsName is: ${PublicDnsName_val}"
+
             echo "put the DNS value into web service memStash:"
             curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request PUT \
               --data ${PublicDnsName_val} https://api.memstash.io/values/PublicDnsName_key
-            echo "End getting PublicDnsName into cache"
 
       - run:
           name: Add back-end ip to ansible inventory
           command: |
             cat ~/project/.circleci/ansible/inventory.txt
+
             aws ec2 describe-instances  \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text >> ~/project/.circleci/ansible/inventory.txt
+
             cat ~/project/.circleci/ansible/inventory.txt
 
       - run:
@@ -226,7 +234,6 @@ jobs:
       - run:
           name: Configure server
           command: |
-            find . -name "inventory.txt"
             cat ~/project/.circleci/ansible/inventory.txt
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt \
               .circleci/ansible/configure-server.yml 
@@ -238,10 +245,6 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - run:
-          name: install tar
-          command: |
-            yum -y install tar gzip 
       - restore_cache:
           keys: [backend-build-6a,backend-build-6b ]
       - run:
