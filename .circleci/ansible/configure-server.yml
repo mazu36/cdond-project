@@ -11,13 +11,13 @@
 
   environment:
     ENVIRONMENT: production
-    TYPEORM_CONNECTION: "{{ .Environment.TYPEORM_CONNECTION }}"
-    TYPEORM_ENTITIES: "{{ .Environment.TYPEORM_ENTITIES }}"
-    TYPEORM_HOST: "{{ .Environment.TYPEORM_HOST }}"
-    TYPEORM_PORT: "{{ .Environment.TYPEORM_PORT }}"
-    TYPEORM_USERNAME: "{{ .Environment.TYPEORM_USERNAME }}"
-    TYPEORM_PASSWORD: "{{ .Environment.TYPEORM_PASSWORD }}"
-    TYPEORM_DATABASE: "{{ .Environment.TYPEORM_DATABASE }}"
+    TYPEORM_CONNECTION: "{{ lookup('env','TYPEORM_CONNECTION') }}"
+    TYPEORM_ENTITIES: "{{ lookup('env','TYPEORM_ENTITIES') }}"
+    TYPEORM_HOST: "{{ lookup('env','TYPEORM_HOST') }}"
+    TYPEORM_PORT: "{{ lookup('env','TYPEORM_PORT') }}"
+    TYPEORM_USERNAME: "{{ lookup('env','TYPEORM_USERNAME') }}"
+    TYPEORM_PASSWORD: "{{ lookup('env','TYPEORM_PASSWORD') }}"
+    TYPEORM_DATABASE: "{{ lookup('env','TYPEORM_DATABASE')}}"
 
   pre_tasks:
     - name: "wait 600 seconds for target connection to become reachable/usable."
