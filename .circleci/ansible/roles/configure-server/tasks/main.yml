@@ -22,11 +22,11 @@
 - name: "Setting environment variables"
   environment:
     ENVIRONMENT: production
-    TYPEORM_CONNECTION: {{ .Environment.TYPEORM_CONNECTION }}
-    TYPEORM_ENTITIES: {{ .Environment.TYPEORM_ENTITIES }}  
-    TYPEORM_HOST: {{ .Environment.TYPEORM_HOST }}
-    TYPEORM_PORT: {{ .Environment.TYPEORM_PORT }}
-    TYPEORM_USERNAME: {{ .Environment.TYPEORM_USERNAME }}
-    TYPEORM_PASSWORD: {{ .Environment.TYPEORM_PASSWORD }}
-    TYPEORM_DATABASE: {{ .Environment.TYPEORM_DATABASE }}
+    TYPEORM_CONNECTION: "{{ .Environment.TYPEORM_CONNECTION }}"
+    TYPEORM_ENTITIES: "{{ .Environment.TYPEORM_ENTITIES }}"
+    TYPEORM_HOST: "{{ .Environment.TYPEORM_HOST }}"
+    TYPEORM_PORT: "{{ .Environment.TYPEORM_PORT }}"
+    TYPEORM_USERNAME: "{{ .Environment.TYPEORM_USERNAME }}"
+    TYPEORM_PASSWORD: "{{ .Environment.TYPEORM_PASSWORD }}"
+    TYPEORM_DATABASE: "{{ .Environment.TYPEORM_DATABASE }}"
 
