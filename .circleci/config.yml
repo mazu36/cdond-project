@@ -241,7 +241,7 @@ jobs:
       - run:
           name: install tar
           command: |
-            yum -y install tar gzip
+            yum -y install tar gzip 
       - restore_cache:
           keys: [backend-build-6a,backend-build-6b ]
       - run:
@@ -259,6 +259,7 @@ jobs:
             mig_val=$([ ! -z "$mig_result" ] && echo "1" || echo "0" )
             echo "Value mig_val is: ${mig_val}"
             echo "put the mig_val value into web service memStash:"
+
             curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request PUT \
               --data ${mig_val} https://api.memstash.io/values/mig_key
@@ -288,7 +289,7 @@ jobs:
             npm run build
       - run:
           name: Deploy frontend objects
-            command: |
+          command: |
             aws s3 sync ./dist s3://"prd-${CIRCLE_WORKFLOW_ID:0:7}" --delete
 
       # Here's where you will add some code to rollback on failure      
@@ -302,7 +303,7 @@ jobs:
       - run:
           name: Install dependencies
           command: | 
-            yum -y install tar gzip
+            yum -y install tar gzip awscli
       - attach_workspace:
           at: ~/project/
       - run:
@@ -312,7 +313,7 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-            aws s3 sync ./dist s3://"prd-${CIRCLE_WORKFLOW_ID:0:7}" --delete
+            exit 1
       # Here's where you will add some code to rollback on failure  
 
   smoke-test:
