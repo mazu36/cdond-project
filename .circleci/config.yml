@@ -186,8 +186,13 @@ jobs:
             aws ec2 describe-instances  \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text >> ~/project/.circleci/ansible/inventory.txt
+      - run:
+          name: install tar
+          command: |
+            yum -y install tar gzip
 
       - persist_to_workspace:
+          name: Persisting to workspace
           root: ~/project/
           paths:
             - .circleci/ansible/inventory.txt
@@ -199,7 +204,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: [SHA256:6jH3EBjtjp0NvU71iZmxCN/5DXFNNNnncDZwwtkEboc]
+          fingerprints: [SHA256:L2XDt48aVVZpfT7DsQ6+RY6V5XV0fqlRZ0/oEWvvkfM]
       - attach_workspace:
           at: /tmp/workspace
       - run:
