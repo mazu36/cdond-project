@@ -1,13 +1,4 @@
 ---
-environment:
-  ENVIRONMENT: production
-  TYPEORM_CONNECTION: "{{ .Environment.TYPEORM_CONNECTION }}"
-  TYPEORM_ENTITIES: "{{ .Environment.TYPEORM_ENTITIES }}"
-  TYPEORM_HOST: "{{ .Environment.TYPEORM_HOST }}"
-  TYPEORM_PORT: "{{ .Environment.TYPEORM_PORT }}"
-  TYPEORM_USERNAME: "{{ .Environment.TYPEORM_USERNAME }}"
-  TYPEORM_PASSWORD: "{{ .Environment.TYPEORM_PASSWORD }}"
-  TYPEORM_DATABASE: "{{ .Environment.TYPEORM_DATABASE }}"
 
 - name: "upgrade packages."
   become: true
@@ -30,8 +21,8 @@ environment:
     state: present
 
 - name: Print env variable
-   shell: env
-   register: print_result
+  shell: env
+  register: print_result
 
 - name: print message
   debug:
