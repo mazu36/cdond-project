@@ -175,7 +175,7 @@ jobs:
       - run:
           name: Cache PublicDnsName using MemStash
           command: |
-            echo "Get value:"
+            echo "Get PublicDnsName value:"
             PublicDnsName_val=$( 
               aws ec2 describe-instances  \
               --query 'Reservations[*].Instances[*].PublicDnsName' \
@@ -183,10 +183,26 @@ jobs:
               --output text )
             echo "Value PublicDnsName is: ${PublicDnsName_val}"
 
-            echo "put the DNS value into web service memStash:"
+            echo "put DNS value into memStash:"
             curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request PUT \
               --data ${PublicDnsName_val} https://api.memstash.io/values/PublicDnsName_key
+
+      - run:
+          name: Cache PublicIpAddress using MemStash
+          command: |
+            echo "Get PublicIpAddress value:"
+            PublicIpAddress_val=$( 
+              aws ec2 describe-instances  \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:project,Values=udapeople" \
+              --output text )
+            echo "Value PublicIpAddress is: ${PublicIpAddress_val}"
+
+            echo "put Ip value into memStash:"
+            curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
+              --request PUT \
+              --data ${PublicIpAddress_val} https://api.memstash.io/values/PublicIpAddress_key
 
       - run:
           name: Add back-end ip to ansible inventory
