@@ -267,6 +267,7 @@ jobs:
       - run:
           name: Run migrations
           command: |
+            pwd
             echo ENVIROMENT=production >> "backend/.env"
             echo TYPEORM_CONNECTION=postgres >> "backend/.env"
             echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
@@ -279,16 +280,17 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd ~/project/backend
 
-            echo "Display file backend/.env"
-            find backend -name ".env"
-            cat backend/.env
+            echo "Display file  .env"
+            find . -name ".env"
+            
 
             echo "Run migrations:"
             npm run migrations > migrations_log.txt
             echo $?
 
-            echo "Finding migrations_log.txt:"
+            echo "Display file migrations_log.txt"
             find . -name "migrations_log.txt"
+
             echo "Get value:"
             mig_result=$( grep -l "has been executed successfully" migrations_log.txt)
             mig_val=$([ ! -z "$mig_result" ] && echo "1" || echo "0" )
