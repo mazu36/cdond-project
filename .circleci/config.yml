@@ -280,13 +280,13 @@ jobs:
             cd ~/project/backend
 
             echo "Display file backend/.env"
-            find . -name "backend/.env"
+            find backend -name ".env"
             cat backend/.env
 
             echo "Run migrations:"
             npm run migrations > migrations_log.txt
             echo $?
-            
+
             echo "Finding migrations_log.txt:"
             find . -name "migrations_log.txt"
             echo "Get value:"
