@@ -279,11 +279,16 @@ jobs:
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd ~/project/backend
 
-            echo "Display file .env"
-            cat .env
+            echo "Display file backend/.env"
+            find . -name "backend/.env"
+            cat backend/.env
+
             echo "Run migrations:"
             npm run migrations > migrations_log.txt
-
+            echo $?
+            
+            echo "Finding migrations_log.txt:"
+            find . -name "migrations_log.txt"
             echo "Get value:"
             mig_result=$( grep -l "has been executed successfully" migrations_log.txt)
             mig_val=$([ ! -z "$mig_result" ] && echo "1" || echo "0" )
