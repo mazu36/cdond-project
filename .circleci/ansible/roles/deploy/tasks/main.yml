@@ -1,0 +1,7 @@
+---
+
+- name: "deploy BE"
+  become: true
+  copy:
+    src: ~/project/backend/dist
+    dest: .

@@ -186,7 +186,8 @@ jobs:
             echo "put DNS value into memStash:"
             curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request PUT \
-              --data ${PublicDnsName_val} https://api.memstash.io/values/PublicDnsName_key
+              --data ${PublicDnsName_val} \
+                https://api.memstash.io/values/PublicDnsName_key
 
       - run:
           name: Cache PublicIpAddress using MemStash
@@ -202,16 +203,17 @@ jobs:
             echo "put Ip value into memStash:"
             curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request PUT \
-              --data ${PublicIpAddress_val} https://api.memstash.io/values/PublicIpAddress_key
+              --data ${PublicIpAddress_val} \
+                https://api.memstash.io/values/PublicIpAddress_key 
 
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            cat ~/project/.circleci/ansible/inventory.txt
+            echo "[web]" > ~/project/.circleci/ansible/inventory.txt
 
-            aws ec2 describe-instances  \
-            --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --output text >> ~/project/.circleci/ansible/inventory.txt
+            curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
+              --request GET https://api.memstash.io/values/PublicIpAddress_key \
+              >>  ~/project/.circleci/ansible/inventory.txt
 
             cat ~/project/.circleci/ansible/inventory.txt
 
@@ -222,9 +224,8 @@ jobs:
 
       - persist_to_workspace:
           name: Persisting to workspace
-          root: ~/project/
-          paths:
-            - .circleci/ansible/inventory.txt
+          root: ~/project
+          paths: .circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure      
 
   configure-infrastructure:
@@ -266,7 +267,6 @@ jobs:
       - run:
           name: Run migrations
           command: |
-            env
             echo ENVIROMENT=production >> "backend/.env"
             echo TYPEORM_CONNECTION=postgres >> "backend/.env"
             echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
@@ -278,11 +278,12 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd ~/project/backend
+
+            echo "Display file .env"
             cat .env
+            echo "Run migrations:"
             npm run migrations > migrations_log.txt
-      - run:
-          name: Send migration results to memstash
-          command: |
+
             echo "Get value:"
             mig_result=$( grep -l "has been executed successfully" migrations_log.txt)
             mig_val=$([ ! -z "$mig_result" ] && echo "1" || echo "0" )
@@ -315,6 +316,7 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
+            cd ~/project/frontend
             npm run build
       - run:
           name: Deploy frontend objects
@@ -332,17 +334,21 @@ jobs:
       - run:
           name: Install dependencies
           command: | 
-            yum -y install tar gzip awscli
+            yum -y install tar gzip  
       - attach_workspace:
           at: ~/project/
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update ansible
       - run:
           name: Deploy backend
           command: |
-            exit 1
+            cat ~/project/.circleci/ansible/inventory.txt
+            ansible-playbook -i ~/project/.circleci/ansible/inventory.txt \
+              .circleci/ansible/deploy-backend.yml 
+
+
       # Here's where you will add some code to rollback on failure  
 
   smoke-test:
