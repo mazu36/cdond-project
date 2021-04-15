@@ -1,7 +1,18 @@
 ---
 
-- name: "deploy BE"
+- name: Create directory
+  file:
+    path: /home/ubuntu/backend
+    state: directory
+
+- name: "Copy the files"
+  no_output_timeout: 30m
   become: true
   copy:
     src: ~/project/backend/dist
-    dest: .
+    dest: /home/ubuntu/backend
+
+- name: Start the Application with PM2
+  shell: |
+    cd /home/ubuntu/backend
+    pm2 start npm -- run start

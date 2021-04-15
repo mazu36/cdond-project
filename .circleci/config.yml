@@ -326,6 +326,8 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout 
+      - restore_cache:
+          keys: [frontend-build-4]
       - run:
           name: Install dependencies
           command: | 
@@ -359,7 +361,7 @@ jobs:
       - run:
           name: Install dependencies
           command: | 
-            yum -y install tar gzip  
+            apt-get install -y tar gzip  
       - attach_workspace:
           at: ~/project/
       - run:
@@ -368,8 +370,10 @@ jobs:
             apk add --update ansible
       - run:
           name: Deploy backend
+          no_output_timeout: 30m
           command: |
-            cat ~/project/.circleci/ansible/inventory.txt
+            cat ~/project/.circleci/ansible/inventory.txt 
+            tar -C backend -czvf artifact.tar.gz . 
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt \
               .circleci/ansible/deploy-backend.yml 
 
