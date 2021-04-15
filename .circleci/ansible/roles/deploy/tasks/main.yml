@@ -6,7 +6,6 @@
     state: directory
 
 - name: "Copy the files"
-  no_output_timeout: 30m
   become: true
   copy:
     src: ~/project/backend/dist
