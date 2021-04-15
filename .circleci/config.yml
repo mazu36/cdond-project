@@ -218,12 +218,12 @@ jobs:
             cat ~/project/.circleci/ansible/inventory.txt
 
       - run:
-          name: install tar
+          name: install dependencies
           command: |
             yum -y install tar gzip
 
       - persist_to_workspace:
-          name: Persisting to workspace
+          name: Persisting to workspace inventory.txt
           root: ~/project
           paths: .circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure      
@@ -243,6 +243,11 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/project/
+      - run:
+        name: Verify inventory file
+        command: |
+          ls -l ~/project/.circleci/ansible/
+          cat ~/project/.circleci/ansible/inventory.txt
       - run:
           name: Install dependencies
           command: |
@@ -269,7 +274,7 @@ jobs:
           command: |
             pwd
             ls -l
-            ls /home/circleci/project
+            #ls /home/circleci/project
 
             echo ENVIROMENT=production >> "backend/.env"
             echo TYPEORM_CONNECTION=postgres >> "backend/.env"
@@ -282,10 +287,9 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             
-            cd ~/project/backend
+            cat backend/.env
 
-            echo "Display file  .env"
-            find . -name ".env"
+            cd ~/project/backend
             
 
             echo "Run migrations:"
