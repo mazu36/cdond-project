@@ -162,7 +162,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=udapeople \
-              --stack-name "prod-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --stack-name "BE-prod-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Ensure front-end infrastructure exist
@@ -349,7 +349,7 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            aws s3 sync ~/project/frontend/dist s3://"prod-${CIRCLE_WORKFLOW_ID:0:7}" --delete
+            aws s3 sync ~/project/frontend/dist s3://"udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --delete
 
       # Here's where you will add some code to rollback on failure      
                     
@@ -378,7 +378,7 @@ jobs:
             cat ~/project/.circleci/ansible/inventory.txt 
 
             echo "Create a tar:"
-            tar -C backend -czvf artifact.tar.gz 
+            tar -C backend -czvf artifact.tar.gz .
 
             echo "The path of the tar file:"
             find ~/project -name "artifact.tar.gz"
@@ -403,18 +403,24 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            # your code here
-            echo 1
+            IP_public=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
+              --request GET https://api.memstash.io/values/PublicIpAddress_key)
+            back_URL="https://${IP_public}:3000/api/status"
       - run:
           name: Backend smoke test.
           command: |
-            # your code here
-            echo 1
+            code_ret=$(curl -s "${back_URL}" | echo $? )
+            return "${code_ret}" 
       - run:
           name: Frontend smoke test.
           command: |
-            # your code here
-            echo 1
+            front_URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com"
+            if curl -s ${URL} | grep "Welcome"
+            then
+              return 1
+            else
+              return 1
+            fi
       # Here's where you will add some code to rollback on failure  
 
   cloudfront-update:
