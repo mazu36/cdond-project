@@ -17,12 +17,6 @@
     dest: /home/ubuntu/backend
     remote_src: yes
 
-- name: "Copy the files"
-  become: true
-  copy:
-    src: /home/circleci/project/backend/dist
-    dest: /home/ubuntu/backend
-
 - name: Start the Application with PM2
   shell: |
     cd /home/ubuntu/backend
