@@ -397,8 +397,8 @@ jobs:
           command: |
 
             pwd
-            ls -l /home/circleci/project/backend/dist 
-            ls -l /home/circleci/project/backend/node_modules
+            ls -l /home/circleci/project/backend/dist |head 
+            ls -l /home/circleci/project/backend/node_modules |head
             ls -l /home/circleci/project/backend/package.json
             ls -l /home/circleci/project/backend/package-lock.json
 
