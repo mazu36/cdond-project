@@ -14,7 +14,7 @@
 - name: Unarchive a file that is already downloaded
   ansible.builtin.unarchive:
     src:  /home/ubuntu/artifact.tar.gz
-    dest: /home/ubuntu
+    dest: /home/ubuntu/backend
     remote_src: yes
 
 - name: "Copy the files"

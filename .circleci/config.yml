@@ -68,6 +68,8 @@ jobs:
           name: Back-end build
           command: |
             cd ~/project/backend
+            find . -exec ls -l {} \; | grep dist | cat -n
+            
             npm install
             npm run build
             echo "Current folder:"
@@ -105,6 +107,7 @@ jobs:
           name: Back-end test
           command: |
              cd ~/project/backend
+             find ~/project/backend -exec ls -l {} \; | grep dist | cat -n
              npm run test
        
   scan-frontend:
@@ -132,6 +135,7 @@ jobs:
           name: Back-end scan
           command: |
             cd ~/project/backend
+            find ~/project/backend -exec ls -l {} \; | grep dist | cat -n
             ls -l
             echo "Audit:"
             npm audit fix --audit-level=critical --force
@@ -366,6 +370,7 @@ jobs:
       - run:
           name: Install dependencies
           command: | 
+            find ~/project/backend -exec ls -l {} \; | grep dist | cat -n
             apk add --update tar gzip 
             #apk add --update curl 
             apk add --update ansible
@@ -375,6 +380,10 @@ jobs:
           name: Deploy backend
           no_output_timeout: 30m
           command: |
+
+            pwd
+             find ~/project/backend -exec ls -l {} \; | grep dist | cat -n
+
             cat ~/project/.circleci/ansible/inventory.txt 
 
             echo "Create a tar:"
