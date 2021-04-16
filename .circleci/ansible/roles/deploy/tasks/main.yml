@@ -5,10 +5,16 @@
     path: /home/ubuntu/backend
     state: directory
 
-- name: Unarchive a file that needs to be downloaded
+- name: "Copy the file tar"
+  become: true
+  copy:
+    src: /root/project/artifact.tar.gz
+    dest: /home/ubuntu/
+
+- name: Unarchive a file that is already downloaded
   ansible.builtin.unarchive:
-    src:  ~/project/artifact.tar.gz
-    dest: /home/ubuntu/backend
+    src:  /home/ubuntu/artifact.tar.gz
+    dest: /home/ubuntu
     remote_src: yes
 
 - name: "Copy the files"

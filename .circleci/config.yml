@@ -384,6 +384,8 @@ jobs:
             find ~/project -name "artifact.tar.gz"
 
             pwd
+            echo "Display contenu"
+            tar -tzvf artifact.tar.gz
 
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt \
               .circleci/ansible/deploy-backend.yml 
