@@ -7,7 +7,7 @@
 
 - name: Unarchive a file that needs to be downloaded
   ansible.builtin.unarchive:
-    src:  ~/project/artifact.tar.gz
+    src:  ~/project/backend/artifact.tar.gz
     dest: /home/ubuntu/backend
     remote_src: yes
 

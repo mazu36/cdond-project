@@ -233,6 +233,8 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints: ["70:18:61:97:3d:27:79:80:79:38:c4:0b:32:e7:8a:7f"]
       - attach_workspace:
           at: ~/project/
       - run:
@@ -243,12 +245,10 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible
-            
+            apk add --update ansible  
       - run:
           name: Configure server
-          command: |
-            cat ~/project/.circleci/ansible/inventory.txt
+          command: | 
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt \
               .circleci/ansible/configure-server.yml 
             
@@ -322,16 +322,11 @@ jobs:
       - run:
           name: Install dependencies
           command: | 
-            #yum -y install tar gzip
-            #yum -y install nodejs #ko
-            #yum -y install npm #ko
-            
             apk add --no-cache nodejs
             apk add --no-cache npm
             apk add --no-cache bash
             apk add --no-cache curl
             pip install awscli
-
       - attach_workspace:
           at: ~/project/
       - run:
@@ -347,10 +342,14 @@ jobs:
             npm install
             npm run build
             npm audit --audit-level=critical
+
+            pwd
+            find ~/project -name "dist"
+
       - run:
           name: Deploy frontend objects
           command: |
-            aws s3 sync ./dist s3://"prd-${CIRCLE_WORKFLOW_ID:0:7}" --delete
+            aws s3 sync ~/project/frontend/dist s3://"prd-${CIRCLE_WORKFLOW_ID:0:7}" --delete
 
       # Here's where you will add some code to rollback on failure      
                     
@@ -359,23 +358,19 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints: ["70:18:61:97:3d:27:79:80:79:38:c4:0b:32:e7:8a:7f"]
       - restore_cache:
           keys: [backend-build-6a,backend-build-6b ]
           # 6b needed for dist folder to be deployed
-      # Add ssh keys with fingerprint
       - run:
           name: Install dependencies
           command: | 
-            #yum -y install tar gzip
-            #apt-get install -y tar gzip 
-            apk add --update tar gzip curl 
+            apk add --update tar gzip 
+            #apk add --update curl 
+            apk add --update ansible
       - attach_workspace:
           at: ~/project/
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible
-            #yum -y install ansible
       - run:
           name: Deploy backend
           no_output_timeout: 30m
@@ -386,7 +381,9 @@ jobs:
             tar -C backend -czvf artifact.tar.gz . 
 
             echo "The path of the tar file:"
-            find . -name "artifact.tar.gz"
+            find ~/project -name "artifact.tar.gz"
+
+            pwd
 
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt \
               .circleci/ansible/deploy-backend.yml 
