@@ -298,7 +298,7 @@ jobs:
             tail migrations_log.txt
 
             echo "Get value:"
-            grep -l "has been executed successfully" migrations_log.txt
+            grep -lE "(has been executed successfully|No migrations are pending)" migrations_log.txt
             echo "start 1"
             mig_result=$( grep -lE "(has been executed successfully|No migrations are pending)" migrations_log.txt)
             echo "start 2"
