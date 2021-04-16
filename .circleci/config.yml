@@ -372,14 +372,18 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["70:18:61:97:3d:27:79:80:79:38:c4:0b:32:e7:8a:7f"]
       - restore_cache:
-          keys: [backend-build-6a,backend-build-6b ]
+          keys: [backend-build-6a]
+      - restore_cache:
+          keys: [backend-build-6b]
           # 6b needed for dist folder to be deployed
       - run:
           name: General checking
           command: |
             pwd
             whoami
-            ls -l
+            ls -la | grep -lE "(backend|frontend|.circleci|migrations)"
+            echo "/home/circleci/"
+            ls -l /home/circleci/project/backend/
       - run:
           name: Install dependencies
           command: | 
