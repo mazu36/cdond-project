@@ -324,6 +324,7 @@ jobs:
           name: Install dependencies
           command: | 
             yum -y install tar gzip
+            yum -y install npm
       - attach_workspace:
           at: ~/project/
       - run:
@@ -354,15 +355,16 @@ jobs:
       - run:
           name: Install dependencies
           command: | 
-            yum -y install tar gzip
-            #apt-get install -y tar gzip  
+            #yum -y install tar gzip
+            #apt-get install -y tar gzip 
+            apk add --update tar gzip curl 
       - attach_workspace:
           at: ~/project/
       - run:
           name: Install dependencies
           command: |
-            yum -y install tar gzip
-            #apk add --update ansible
+            apk add --update ansible
+            #yum -y install ansible
       - run:
           name: Deploy backend
           no_output_timeout: 30m
