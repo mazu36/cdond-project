@@ -162,7 +162,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=udapeople \
-              --stack-name "BE-prod-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --stack-name "prod-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
           name: Ensure front-end infrastructure exist
@@ -349,7 +349,7 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            aws s3 sync ~/project/frontend/dist s3://"prd-${CIRCLE_WORKFLOW_ID:0:7}" --delete
+            aws s3 sync ~/project/frontend/dist s3://"prod-${CIRCLE_WORKFLOW_ID:0:7}" --delete
 
       # Here's where you will add some code to rollback on failure      
                     
@@ -378,7 +378,7 @@ jobs:
             cat ~/project/.circleci/ansible/inventory.txt 
 
             echo "Create a tar:"
-            tar -C backend -czvf artifact.tar.gz . 
+            tar -C backend -czvf artifact.tar.gz 
 
             echo "The path of the tar file:"
             find ~/project -name "artifact.tar.gz"
