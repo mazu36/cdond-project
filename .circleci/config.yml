@@ -324,6 +324,7 @@ jobs:
           name: Install dependencies
           command: | 
             yum -y install tar gzip
+            yum -y install nodejs
             yum -y install npm
       - attach_workspace:
           at: ~/project/
@@ -371,6 +372,7 @@ jobs:
           command: |
             cat ~/project/.circleci/ansible/inventory.txt 
             tar -C backend -czvf artifact.tar.gz . 
+            find . -name "artifact.tar.gz"
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt \
               .circleci/ansible/deploy-backend.yml 
 

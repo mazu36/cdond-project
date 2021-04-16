@@ -8,7 +8,7 @@
 - name: "Copy the files tar"
   become: true
   copy:
-    src: ~/project/backend/artifact.tar.gz
+    src: ~/project/artifact.tar.gz
     dest: /home/ubuntu/backend
 
 - name: "List the files tar"
