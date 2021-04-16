@@ -315,17 +315,23 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      #- image: amazon/aws-cli
+      - image: python:3.7-alpine3.11
     steps:
       - checkout 
-      - restore_cache:
-          keys: [frontend-build-4]
       - run:
           name: Install dependencies
           command: | 
-            yum -y install tar gzip
-            yum -y install nodejs
-            yum -y install npm
+            #yum -y install tar gzip
+            #yum -y install nodejs #ko
+            #yum -y install npm #ko
+            
+            apk add --no-cache nodejs
+            apk add --no-cache npm
+            apk add --no-cache bash
+            apk add --no-cache curl
+            pip install awscli
+
       - attach_workspace:
           at: ~/project/
       - run:
@@ -340,6 +346,7 @@ jobs:
             cd ~/project/frontend
             npm install
             npm run build
+            npm audit --audit-level=critical
       - run:
           name: Deploy frontend objects
           command: |
@@ -352,6 +359,9 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-build-6a,backend-build-6b ]
+          # 6b needed for dist folder to be deployed
       # Add ssh keys with fingerprint
       - run:
           name: Install dependencies
@@ -371,8 +381,13 @@ jobs:
           no_output_timeout: 30m
           command: |
             cat ~/project/.circleci/ansible/inventory.txt 
+
+            echo "Create a tar:"
             tar -C backend -czvf artifact.tar.gz . 
+
+            echo "The path of the tar file:"
             find . -name "artifact.tar.gz"
+
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt \
               .circleci/ansible/deploy-backend.yml 
 

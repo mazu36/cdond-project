@@ -5,33 +5,17 @@
     path: /home/ubuntu/backend
     state: directory
 
-- name: "Copy the files tar"
-  become: true
-  copy:
-    src: ~/project/artifact.tar.gz
+- name: Unarchive a file that needs to be downloaded
+  ansible.builtin.unarchive:
+    src:  ~/project/artifact.tar.gz
     dest: /home/ubuntu/backend
-
-- name: "List the files tar"
-  become: true
-  shell:
-    tar -tzvf /home/ubuntu/backend/artifact.tar.gz
+    remote_src: yes
 
 - name: "Copy the files"
   become: true
   copy:
     src: ~/project/backend/dist
     dest: /home/ubuntu/backend
-
-- name: "List the files in dist"
-  become: true
-  shell:
-    find /home/ubuntu/backend -name "dist"
-
-- name: Decompression
-  become: true
-  shell:
-    tar -C /home/ubuntu/backend -xzvf /home/ubuntu/backend/artifact.tar.gz 
-
 
 - name: Start the Application with PM2
   shell: |
