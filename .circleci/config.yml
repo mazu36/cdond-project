@@ -336,6 +336,7 @@ jobs:
           name: Deploy frontend objects
           command: |
             cd ~/project/frontend
+            npm install
             npm run build
       - run:
           name: Deploy frontend objects
@@ -353,13 +354,15 @@ jobs:
       - run:
           name: Install dependencies
           command: | 
-            apt-get install -y tar gzip  
+            yum -y install tar gzip
+            #apt-get install -y tar gzip  
       - attach_workspace:
           at: ~/project/
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible
+            yum -y install tar gzip
+            #apk add --update ansible
       - run:
           name: Deploy backend
           no_output_timeout: 30m
