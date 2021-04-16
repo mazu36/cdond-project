@@ -66,12 +66,18 @@ jobs:
           keys: [backend-build-6a, backend-build-6b]
       - run:
           name: Back-end build
-          command: |
+          command: | 
+            whoami
+            pwd
+            ls -l
             cd ~/project/backend
-            find . -exec ls -l {} \; | grep dist | cat -n
+            pwd
+            ls -l
             
             npm install
             npm run build
+            pwd
+            ls -l
 
       - save_cache:
           paths: 
@@ -102,8 +108,13 @@ jobs:
       - run:
           name: Back-end test
           command: |
-             cd ~/project/backend
-             npm run test
+            whoami
+            pwd
+            ls -l
+
+            cd ~/project/backend
+            npm run test
+            ls -l
        
   scan-frontend:
     docker:
@@ -129,6 +140,9 @@ jobs:
       - run:
           name: Back-end scan
           command: |
+            whoami
+            ls -l
+
             cd ~/project/backend
             pwd
             ls -l
@@ -141,18 +155,18 @@ jobs:
             - backend/package.json
             - backend/package-lock.json
           key: backend-build-6b
-      - run:
-          name: Back-end listing only
-          command: |
-            cd ~/project/backend
-            ls -l
-
 
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli 
     steps:
       - checkout
+      - run:
+          name: General checking
+          command: |
+            pwd
+            whoami
+            ls -l
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -361,16 +375,15 @@ jobs:
           keys: [backend-build-6a,backend-build-6b ]
           # 6b needed for dist folder to be deployed
       - run:
-          name: Check dist
+          name: General checking
           command: |
             pwd
             whoami
-            find /home/circleci/project/backend -type d -exec ls -l {} \; | grep dist | cat -n
+            ls -l
       - run:
           name: Install dependencies
           command: | 
-            apk add --update tar gzip 
-            #apk add --update curl 
+            apk add --update tar gzip  
             apk add --update ansible
       - attach_workspace:
           at: ~/project/
@@ -380,9 +393,19 @@ jobs:
           command: |
 
             pwd
-            find /home/circleci/project/backend/dist -exec ls -l {} \; | grep dist | cat -n
+            ls -l /home/circleci/project/backend/dist 
+            ls -l /home/circleci/project/backend/node_modules
+            ls -l /home/circleci/project/backend/package.json
+            ls -l /home/circleci/project/backend/package-lock.json
+
+            echo "Move files:"
+            mv /home/circleci/project/backend/dist /root/project/backend/
+            mv /home/circleci/project/backend/node_modules /root/project/backend/
+            mv /home/circleci/project/backend/package.json /root/project/backend/
+            mv /home/circleci/project/backend/package-lock.json /root/project/backend/
 
             cat ~/project/.circleci/ansible/inventory.txt 
+
 
             echo "Create a tar:"
             pwd
