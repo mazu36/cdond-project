@@ -107,7 +107,7 @@ jobs:
           name: Back-end test
           command: |
              cd ~/project/backend
-             find ~/project/backend -exec ls -l {} \; | grep dist | cat -n
+             find ~/project/backend -type d -exec ls -l {} \; | grep dist | cat -n
              npm run test
        
   scan-frontend:
@@ -132,10 +132,13 @@ jobs:
       - restore_cache:
           keys: [backend-build-6a,backend-build-6b ]
       - run:
+          name: Check dist
+          command: |
+            find ~/project/backend -type d -exec ls -l {} \; | grep dist | cat -n
+      - run:
           name: Back-end scan
           command: |
             cd ~/project/backend
-            find ~/project/backend -exec ls -l {} \; | grep dist | cat -n
             ls -l
             echo "Audit:"
             npm audit fix --audit-level=critical --force
@@ -368,9 +371,12 @@ jobs:
           keys: [backend-build-6a,backend-build-6b ]
           # 6b needed for dist folder to be deployed
       - run:
+          name: Check dist
+          command: |
+            find ~/project/backend -type d -exec ls -l {} \; | grep dist | cat -n
+      - run:
           name: Install dependencies
           command: | 
-            find ~/project/backend -exec ls -l {} \; | grep dist | cat -n
             apk add --update tar gzip 
             #apk add --update curl 
             apk add --update ansible
