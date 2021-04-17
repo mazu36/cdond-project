@@ -41,6 +41,7 @@
 #    force: no
 
 - name: "xxx"
+  become: true
   shell: |
     mv  /home/ubuntu/backend/ /root/backend/
 
