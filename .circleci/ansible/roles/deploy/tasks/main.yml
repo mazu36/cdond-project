@@ -16,7 +16,7 @@
     src:  /home/ubuntu/artifact.tar.gz
     dest: /home/ubuntu/backend
     remote_src: yes
----
+    
 - name: "install node"
   become: true
   command: npm install -g n
