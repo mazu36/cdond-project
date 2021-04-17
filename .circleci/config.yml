@@ -10,8 +10,9 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            # Your code here
-            exit 1
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws cloudformation delete-stack --stack-name "BE-prod-${CIRCLE_WORKFLOW_ID:0:7}"
+            aws cloudformation delete-stack --stack-name "FE-prod-${CIRCLE_WORKFLOW_ID:0:7}"
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -385,9 +386,6 @@ jobs:
           command: |
             pwd
             whoami
-            ls -la | grep -lE "(backend|frontend|.circleci|migrations)" |head
-            echo "/home/circleci/"
-            ls -l /home/circleci/project/backend/
       - run:
           name: Install dependencies
           command: | 
@@ -399,9 +397,6 @@ jobs:
           name: Deploy backend
           no_output_timeout: 30m
           command: |
-
-            pwd
-
             echo ENVIROMENT=production >> "backend/.env"
             echo TYPEORM_CONNECTION=postgres >> "backend/.env"
             echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
@@ -413,7 +408,6 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             
-
             echo "File inventory.txt "
             cat ~/project/.circleci/ansible/inventory.txt 
 
