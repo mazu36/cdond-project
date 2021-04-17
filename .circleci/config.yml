@@ -377,7 +377,7 @@ jobs:
           command: |
             pwd
             whoami
-            ls -la | grep -lE "(backend|frontend|.circleci|migrations)"
+            ls -la | grep -lE "(backend|frontend|.circleci|migrations)" |head
             echo "/home/circleci/"
             ls -l /home/circleci/project/backend/
       - run:
@@ -398,12 +398,16 @@ jobs:
             #ls -l /home/circleci/project/backend/package.json
             #ls -l /home/circleci/project/backend/package-lock.json
 
-            #echo "Move files:"
-            #mv /home/circleci/project/backend/dist /root/project/backend/
-            #mv /home/circleci/project/backend/node_modules /root/project/backend/
-            #mv /home/circleci/project/backend/package.json /root/project/backend/
-            #mv /home/circleci/project/backend/package-lock.json /root/project/backend/
+            echo "Move files:"
+            mv /home/circleci/project/backend/dist /root/project/backend/
+            mv /home/circleci/project/backend/node_modules /root/project/backend/
+            mv /home/circleci/project/backend/package.json /root/project/backend/
+            mv /home/circleci/project/backend/package-lock.json /root/project/backend/
 
+            echo "/root/project/backend folder:"
+            ls -la /root/project/backend/
+
+            echo "File inventory.txt "
             cat ~/project/.circleci/ansible/inventory.txt 
 
             echo "Create a tar:"
