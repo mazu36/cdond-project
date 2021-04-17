@@ -344,8 +344,8 @@ jobs:
       - run:
           name: Install dependencies
           command: | 
-            #apk add --no-cache nodejs
-            #apk add --no-cache npm
+            apk add --no-cache nodejs
+            apk add --no-cache npm
             #apk add --no-cache bash
             #apk add --no-cache curl
             pip install awscli
@@ -380,11 +380,6 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["70:18:61:97:3d:27:79:80:79:38:c4:0b:32:e7:8a:7f"]
-      - restore_cache:
-          keys: [backend-build-6a]
-      - restore_cache:
-          keys: [backend-build-6b]
-          # 6b needed for dist folder to be deployed
       - run:
           name: General checking
           command: |
@@ -406,19 +401,6 @@ jobs:
           command: |
 
             pwd
-            #ls -l /home/circleci/project/backend/dist |head 
-            #ls -l /home/circleci/project/backend/node_modules |head
-            #ls -l /home/circleci/project/backend/package.json
-            #ls -l /home/circleci/project/backend/package-lock.json
-
-            #echo "Move files:"
-            #mv /home/circleci/project/backend/dist /root/project/backend/
-            #mv /home/circleci/project/backend/node_modules /root/project/backend/
-            #mv /home/circleci/project/backend/package.json /root/project/backend/
-            #mv /home/circleci/project/backend/package-lock.json /root/project/backend/
-
-            #echo "/root/project/backend folder:"
-            #ls -la /root/project/backend/
 
             echo ENVIROMENT=production >> "backend/.env"
             echo TYPEORM_CONNECTION=postgres >> "backend/.env"
