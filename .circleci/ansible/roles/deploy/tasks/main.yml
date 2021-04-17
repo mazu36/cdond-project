@@ -1,4 +1,8 @@
 ---
+- name: env variables
+  shell: 
+    env |cat -n
+
 
 - name: Create directory
   file:
@@ -17,15 +21,19 @@
     dest: /home/ubuntu/backend
     remote_src: yes
     
-- name: "install node"
-  become: true
-  command: npm install -g n
-  args:
-    chdir: /home/ubuntu/backend
+- name: env variables backend
+  shell: 
+    cat -n /home/ubuntu/backend/.env
 
 - name: "install npm packages"
   become: true
   command: npm install
+  args:
+    chdir: /home/ubuntu/backend
+
+- name: "build appli"
+  become: true
+  command: npm run build
   args:
     chdir: /home/ubuntu/backend
 
