@@ -353,10 +353,6 @@ jobs:
             npm install
             npm run build
             npm audit --audit-level=critical
-
-            pwd
-            find ~/project -name "dist"
-
       - run:
           name: Deploy frontend objects
           command: |
@@ -397,19 +393,18 @@ jobs:
           command: |
 
             pwd
-            ls -l /home/circleci/project/backend/dist |head 
-            ls -l /home/circleci/project/backend/node_modules |head
-            ls -l /home/circleci/project/backend/package.json
-            ls -l /home/circleci/project/backend/package-lock.json
+            #ls -l /home/circleci/project/backend/dist |head 
+            #ls -l /home/circleci/project/backend/node_modules |head
+            #ls -l /home/circleci/project/backend/package.json
+            #ls -l /home/circleci/project/backend/package-lock.json
 
-            echo "Move files:"
-            mv /home/circleci/project/backend/dist /root/project/backend/
-            mv /home/circleci/project/backend/node_modules /root/project/backend/
-            mv /home/circleci/project/backend/package.json /root/project/backend/
-            mv /home/circleci/project/backend/package-lock.json /root/project/backend/
+            #echo "Move files:"
+            #mv /home/circleci/project/backend/dist /root/project/backend/
+            #mv /home/circleci/project/backend/node_modules /root/project/backend/
+            #mv /home/circleci/project/backend/package.json /root/project/backend/
+            #mv /home/circleci/project/backend/package-lock.json /root/project/backend/
 
             cat ~/project/.circleci/ansible/inventory.txt 
-
 
             echo "Create a tar:"
             pwd
