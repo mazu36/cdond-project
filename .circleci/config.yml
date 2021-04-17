@@ -4,15 +4,17 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      # Add parameter here   
+      curr_workflow_id:
+        type: string     
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-            aws cloudformation delete-stack --stack-name "BE-prod-${CIRCLE_WORKFLOW_ID:0:7}"
-            aws cloudformation delete-stack --stack-name "FE-prod-${CIRCLE_WORKFLOW_ID:0:7}"
+            aws s3 rm s3://udapeople-<< parameters.curr_workflow_id >> --recursive
+            aws cloudformation delete-stack --stack-name "BE-prod-<< parameters.curr_workflow_id >>"
+            aws cloudformation delete-stack --stack-name "FE-prod-<< parameters.curr_workflow_id >>"
+
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -20,28 +22,33 @@ commands:
       # Add parameter here     
     steps:
       - run:
-          name: Revert migrations
-          # Add when this will run
+          name: Install dependencies
           command: |
-            echo ENVIROMENT=production >> "backend/.env"
-            echo TYPEORM_CONNECTION=postgres >> "backend/.env"
-            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
-            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
-            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> "backend/.env"
-            echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
-            echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
-            
-            cat backend/.env
-
+            apk add --update curl
+      - run:
+          name: Revert migrations
+          when: on_fail
+          command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             SUCCESS=$(curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request GET  https://api.memstash.io/values/mig_key )
 
             if(( $SUCCESS==1 )); 
             then
+              pwd
+              echo ENVIROMENT=production >> "backend/.env"
+              echo TYPEORM_CONNECTION=postgres >> "backend/.env"
+              echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
+              echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
+              echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> "backend/.env"
+              echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
+              echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
+              echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
+              echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
+              echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
+              
+              cat backend/.env
+
               cd ~/project/backend
               npm install
               npm run migrations:revert
@@ -453,6 +460,9 @@ jobs:
               return 1
             fi
       - revert-migrations  
+      - destroy-environment:
+          curr_workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+  
 
   cloudfront-update:
     docker:
