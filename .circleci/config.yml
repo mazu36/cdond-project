@@ -371,8 +371,7 @@ jobs:
           name: Deploy frontend objects
           command: |
             aws s3 sync ~/project/frontend/dist s3://"udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --delete
-
-      # Here's where you will add some code to rollback on failure      
+      - revert-migrations     
                     
   deploy-backend:
     docker:
@@ -420,9 +419,7 @@ jobs:
 
             cd ~/project/.circleci/ansible/
             ansible-playbook -i inventory.txt deploy-backend.yml 
-
-
-      # Here's where you will add some code to rollback on failure  
+      - revert-migrations 
 
   smoke-test:
     docker:
@@ -438,7 +435,7 @@ jobs:
           command: |
             IP_public=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request GET https://api.memstash.io/values/PublicIpAddress_key)
-            back_URL="https://${IP_public}:3030/api/status"
+            back_URL="http://${IP_public}:3030/api/status"
             echo "${back_URL}"
       - run:
           name: Backend smoke test.
@@ -455,7 +452,7 @@ jobs:
             else
               return 1
             fi
-      # Here's where you will add some code to rollback on failure  
+      - revert-migrations  
 
   cloudfront-update:
     docker:
@@ -470,7 +467,7 @@ jobs:
           name: Update cloudfront distribution
           command: |
             # your code here
-      # Here's where you will add some code to rollback on failure  
+      - revert-migrations 
 
   cleanup:
     docker:
@@ -490,6 +487,7 @@ jobs:
             then
               # your code here
             fi
+      - revert-migrations
             
 
 workflows:
