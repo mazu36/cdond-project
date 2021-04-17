@@ -40,7 +40,7 @@
 #    dest: /root
 #    force: no
 
-- name "xxx"
+- name: "xxx"
   shell: |
     mv  /home/ubuntu/backend/ /root/backend/
 
