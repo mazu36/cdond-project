@@ -346,9 +346,11 @@ jobs:
             BACKEND_IP=$(head -2 ~/project/.circleci/ansible/inventory.txt |tail -1)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
+            echo "API_URL=$API_URL" >> frontend/.env
       - run:
           name: Deploy frontend objects
           command: |
+            #sudo npm install webpack-dev-server -g
             cd ~/project/frontend
             npm install
             npm run build
@@ -450,6 +452,7 @@ jobs:
             IP_public=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request GET https://api.memstash.io/values/PublicIpAddress_key)
             back_URL="https://${IP_public}:3000/api/status"
+            echo "${back_URL}"
       - run:
           name: Backend smoke test.
           command: |
@@ -459,7 +462,7 @@ jobs:
           name: Frontend smoke test.
           command: |
             front_URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com"
-            if curl -s ${URL} | grep "Welcome"
+            if curl -s ${front_URL} | grep "Welcome"
             then
               return 1
             else
