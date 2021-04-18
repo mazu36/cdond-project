@@ -513,20 +513,20 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Get old stack workflow id
+          name: Remove old stacks and files
           command: |
             export OldWorkflowID=$(curl -H "Content-Type: text/plain" -H "token: OLD_WORKFLOW_ID" \
               --request GET \
                https://api.memstash.io/values/OLD_WORKFLOW_ID )
-            echo "Old workflow_ID: ${OldWorkflowID}"
 
-      - run:
-          name: Remove old stacks and files
-          command: |
+            export STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+              --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
+
+
             echo "Current workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}"
             echo "Old workflow_ID: ${OldWorkflowID}"
 
-            if [ "${CIRCLE_WORKFLOW_ID:0:7}" !=  "${OldWorkflowID}" ]
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
               aws s3 rm s3://udapeople-${OldWorkflowID} --recursive
               aws cloudformation delete-stack --stack-name "BE-prod-${OldWorkflowID}"
