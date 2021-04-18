@@ -432,9 +432,10 @@ jobs:
 
             cd ~/project/.circleci/ansible/
             ansible-playbook -i inventory.txt deploy-backend.yml 
-      - revert-migrations
       - destroy-environment:
           curr_workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations
+      
 
   smoke-test:
     docker:
@@ -456,7 +457,7 @@ jobs:
             echo "${back_URL}"
 
             code_ret=$(curl "${back_URL}" | echo $? )
-            echo "code_ret : $cod_ret"
+            echo "code_ret : ${cod_ret}"
             return "${code_ret}" 
       - run:
           name: Frontend smoke test.
@@ -468,6 +469,8 @@ jobs:
             else
               return 1
             fi
+      - destroy-environment:
+          curr_workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations  
 
 
@@ -476,7 +479,6 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      # Checkout code from git
       - run:
           name: Install dependencies
           command: |
@@ -484,32 +486,47 @@ jobs:
       - run:
           name: Modifying the CloudFront Distro’s Origin Bucket
           command: |
+            curl -H "Content-Type: text/plain" -H "token: "OLD_WORKFLOW_ID" \
+              --request PUT \
+              --data ${CIRCLE_WORKFLOW_ID:0:7} https://api.memstash.io/values/OLD_WORKFLOW_ID
+
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
             --stack-name production-uda \
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople &
-      - revert-migrations
       - destroy-environment:
           curr_workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations
+      
 
   cleanup:
     docker:
       - image: amazon/aws-cli
     steps:
-      # Checkout code from git
       - run:
           name: Get old stack workflow id
           command: |
-            # your code here
-            export OldWorkflowID="the id here"
-            export STACKS=[] #put the list of stacks here
+            export OldWorkflowID=$(curl -H "Content-Type: text/plain" -H "token: "OLD_WORKFLOW_ID" \
+              --request GET \
+               https://api.memstash.io/values/OLD_WORKFLOW_ID)
+            export STACKS=[aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+              --stack-status-filter CREATE_COMPLETE --no-paginate --output text] 
       - run:
           name: Remove old stacks and files
           command: |
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            echo "Current workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}"
+            echo "Old workflow_ID: ${OldWorkflowID}"
+            if [ ${CIRCLE_WORKFLOW_ID:0:7} !=  ${OldWorkflowID} ]
             then
-              # your code here
+              if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+              then
+                aws s3 rm s3://udapeople-${OldWorkflowID} --recursive
+                aws cloudformation delete-stack --stack-name "BE-prod-${OldWorkflowID}"
+                aws cloudformation delete-stack --stack-name "FE-prod-${OldWorkflowID}"
+              fi
+            else
+              echo"No cleanup because current WORKFLOW_ID is the same as old WORFLOW_ID !"
             fi
 
             
