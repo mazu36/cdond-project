@@ -1,5 +1,6 @@
 version: 2.1
 
+jobs:
   general-checking:
     docker:
       - image: amazon/aws-cli 
