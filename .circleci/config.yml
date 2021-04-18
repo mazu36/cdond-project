@@ -24,10 +24,6 @@ commands:
       - restore_cache:
           keys: [backend-build-6a,backend-build-6b ]
       - run:
-          name: Install dependencies
-          command: |
-            apk add --update curl
-      - run:
           name: Revert migrations
           when: on_fail
           command: |
@@ -359,6 +355,7 @@ jobs:
           command: | 
             apk add --no-cache nodejs
             apk add --no-cache npm
+            apk add --no-cache curl
             pip install awscli
       - attach_workspace:
           at: ~/project/
