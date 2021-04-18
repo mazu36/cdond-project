@@ -455,9 +455,7 @@ jobs:
             back_URL="http://${IP_public}:3030/api/status"
             echo "${back_URL}"
 
-            echo "Command: curl -s ${back_URL}" 
-            
-            code_ret=$(curl -s "${back_URL}" | grep '"status":"ok"' | echo $? )
+            code_ret=$(curl "${back_URL}" | echo $? )
             echo "code_ret : $cod_ret"
             return "${code_ret}" 
       - run:
