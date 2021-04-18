@@ -525,13 +525,14 @@ jobs:
           command: |
             echo "Current workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}"
             echo "Old workflow_ID: ${OldWorkflowID}"
-            if [ ${CIRCLE_WORKFLOW_ID:0:7} !=  ${OldWorkflowID} ]
+
+            if [ "${CIRCLE_WORKFLOW_ID:0:7}" !=  "${OldWorkflowID}" ]
             then
               aws s3 rm s3://udapeople-${OldWorkflowID} --recursive
               aws cloudformation delete-stack --stack-name "BE-prod-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "FE-prod-${OldWorkflowID}"
             else
-              echo"No cleanup because current WORKFLOW_ID is the same as old WORFLOW_ID !"
+              echo "No cleanup because current WORKFLOW_ID is the same as old WORFLOW_ID !"
             fi
 
             
