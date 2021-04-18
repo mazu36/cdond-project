@@ -525,6 +525,7 @@ jobs:
 
             echo "Current workflow_ID: ${CIRCLE_WORKFLOW_ID:0:7}"
             echo "Old workflow_ID: ${OldWorkflowID}"
+            echo "Old STACKS: ${STACKS}"
 
             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
@@ -532,7 +533,7 @@ jobs:
               aws cloudformation delete-stack --stack-name "BE-prod-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "FE-prod-${OldWorkflowID}"
             else
-              echo "No cleanup because current WORKFLOW_ID is the same as old WORFLOW_ID !"
+              echo "No cleanup because no stack existe for the old WORFLOW_ID ${OldWorkflowID}!"
             fi
 
             
