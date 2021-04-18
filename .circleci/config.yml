@@ -261,7 +261,8 @@ jobs:
           name: Persisting to workspace inventory.txt
           root: ~/project
           paths: .circleci/ansible/inventory.txt
-      # Here's where you will add some code to rollback on failure      
+      - destroy-environment:
+          curr_workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
   configure-infrastructure:
     docker:
@@ -288,8 +289,8 @@ jobs:
           command: | 
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt \
               .circleci/ansible/configure-server.yml 
-            
-      # Here's where you will add some code to rollback on failure      
+      - destroy-environment:
+          curr_workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}    
 
   run-migrations:
     docker:
@@ -344,7 +345,8 @@ jobs:
               --request PUT \
               --data ${mig_val} https://api.memstash.io/values/mig_key
             
-     # Here's where you will add some code to rollback on failure      
+      - destroy-environment:
+          curr_workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
 
   deploy-frontend:
     docker:
@@ -379,7 +381,9 @@ jobs:
           name: Deploy frontend objects
           command: |
             aws s3 sync ~/project/frontend/dist s3://"udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --delete
-      - revert-migrations     
+      - revert-migrations   
+      - destroy-environment:
+          curr_workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
                     
   deploy-backend:
     docker:
@@ -388,8 +392,6 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["70:18:61:97:3d:27:79:80:79:38:c4:0b:32:e7:8a:7f"]
-      - restore_cache:
-          keys: [backend-build-6b]
       - run:
           name: General checking
           command: |
@@ -421,9 +423,6 @@ jobs:
             echo "File inventory.txt "
             cat ~/project/.circleci/ansible/inventory.txt 
 
-            cp /home/circleci/project/backend/package.json   ./backend/
-            cp /home/circleci/project/backend/package-lock.json ./backend/
-
             echo "Create a tar:"
             pwd
             tar -C backend -czvf artifact.tar.gz .
@@ -433,7 +432,9 @@ jobs:
 
             cd ~/project/.circleci/ansible/
             ansible-playbook -i inventory.txt deploy-backend.yml 
-      - revert-migrations 
+      - revert-migrations
+      - destroy-environment:
+          curr_workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   smoke-test:
     docker:
@@ -470,8 +471,7 @@ jobs:
               return 1
             fi
       - revert-migrations  
-      - destroy-environment:
-          curr_workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
 
   cloudfront-update:
     description: Promote to production
@@ -491,7 +491,9 @@ jobs:
             --stack-name production-uda \
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople &
-      - revert-migrations 
+      - revert-migrations
+      - destroy-environment:
+          curr_workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   cleanup:
     docker:
@@ -511,7 +513,7 @@ jobs:
             then
               # your code here
             fi
-      - revert-migrations
+
             
 
 workflows:
