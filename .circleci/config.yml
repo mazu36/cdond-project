@@ -21,6 +21,8 @@ commands:
     parameters:
       # Add parameter here
     steps:
+      - restore_cache:
+          keys: [backend-build-6a,backend-build-6b ]
       - run:
           name: Install dependencies
           command: |
@@ -355,8 +357,6 @@ jobs:
           command: | 
             apk add --no-cache nodejs
             apk add --no-cache npm
-            #apk add --no-cache bash
-            #apk add --no-cache curl
             pip install awscli
       - attach_workspace:
           at: ~/project/
@@ -388,6 +388,8 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["70:18:61:97:3d:27:79:80:79:38:c4:0b:32:e7:8a:7f"]
+      - restore_cache:
+          keys: [backend-build-6b]
       - run:
           name: General checking
           command: |
@@ -418,6 +420,8 @@ jobs:
             echo "File inventory.txt "
             cat ~/project/.circleci/ansible/inventory.txt 
 
+            cp /home/circleci/backend/package.json   ./backend/
+            cp /home/circleci/backend/package-lock.json ./backend/
             echo "Create a tar:"
             pwd
             tar -C backend -czvf artifact.tar.gz .
@@ -450,7 +454,7 @@ jobs:
           name: Backend smoke test.
           command: |
             echo "Command: curl -s ${back_URL}" 
-            code_ret=$(curl -s "${back_URL}"" | grep '"status":"ok"' | echo $? )
+            code_ret=$(curl -s "${back_URL}" | grep '"status":"ok"' | echo $? )
             echo "code_ret : $cod_ret"
             return "${code_ret}" 
       - run:
