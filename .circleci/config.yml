@@ -279,6 +279,8 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible  
+            apk add --update curl 
+            pip install awscli
       - run:
           name: Configure server
           command: | 
@@ -316,7 +318,6 @@ jobs:
 
             cd ~/project/backend
             
-
             echo "******* Run migrations:"
             npm run migrations > migrations_log.txt
             echo $?
@@ -436,7 +437,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update curl aws
+            apk add --update curl 
+            pip install awscli
       - run:
           name: Get backend url
           command: |
