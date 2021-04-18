@@ -447,16 +447,16 @@ jobs:
             apk add --update curl 
             pip install awscli
       - run:
-          name: Get backend url
+          name: Backend smoke test.
           command: |
             IP_public=$(curl -H "token: ${CIRCLE_WORKFLOW_ID:0:7}" \
               --request GET https://api.memstash.io/values/PublicIpAddress_key)
+
             back_URL="http://${IP_public}:3030/api/status"
             echo "${back_URL}"
-      - run:
-          name: Backend smoke test.
-          command: |
+
             echo "Command: curl -s ${back_URL}" 
+            
             code_ret=$(curl -s "${back_URL}" | grep '"status":"ok"' | echo $? )
             echo "code_ret : $cod_ret"
             return "${code_ret}" 
