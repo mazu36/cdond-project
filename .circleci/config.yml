@@ -11,6 +11,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
+            pip install awscli
             aws s3 rm s3://udapeople-<< parameters.curr_workflow_id >> --recursive
             aws cloudformation delete-stack --stack-name "BE-prod-<< parameters.curr_workflow_id >>"
             aws cloudformation delete-stack --stack-name "FE-prod-<< parameters.curr_workflow_id >>"
@@ -447,7 +448,9 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
+            echo "curl -s "${back_URL}"
             code_ret=$(curl -s "${back_URL}" | echo $? )
+            echo "code_ret : $cod_ret"
             return "${code_ret}" 
       - run:
           name: Frontend smoke test.
@@ -462,9 +465,9 @@ jobs:
       - revert-migrations  
       - destroy-environment:
           curr_workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-  
 
   cloudfront-update:
+    description: Promote to production
     docker:
       - image: amazon/aws-cli
     steps:
@@ -474,9 +477,13 @@ jobs:
           command: |
             # your code here
       - run:
-          name: Update cloudfront distribution
+          name: Modifying the CloudFront Distro’s Origin Bucket
           command: |
-            # your code here
+            aws cloudformation deploy \
+            --template-file .circleci/files/cloudfront.yml \
+            --stack-name production-uda \
+            --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
+            --tags project=udapeople &
       - revert-migrations 
 
   cleanup:
