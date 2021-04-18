@@ -480,7 +480,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update tar gzip
+            apk add --update curl
       - run:
           name: Modifying the CloudFront Distro’s Origin Bucket
           command: |
@@ -510,7 +511,7 @@ jobs:
       - run:
           name: Get old stack workflow id
           command: |
-            export OldWorkflowID=$(curl -H "Content-Type: text/plain" -H "token: "OLD_WORKFLOW_ID" \
+            export OldWorkflowID=$(curl -H "Content-Type: text/plain" -H "token: OLD_WORKFLOW_ID" \
               --request GET \
                https://api.memstash.io/values/OLD_WORKFLOW_ID)
             export STACKS=[aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
