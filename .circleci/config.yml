@@ -501,7 +501,7 @@ jobs:
             --template-file .circleci/files/cloudfront.yml \
             --stack-name production-uda \
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
-            --tags project=udapeople &
+            --tags project=udapeople 
       - destroy-environment:
           curr_workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations
@@ -517,9 +517,9 @@ jobs:
           command: |
             export OldWorkflowID=$(curl -H "Content-Type: text/plain" -H "token: OLD_WORKFLOW_ID" \
               --request GET \
-               https://api.memstash.io/values/OLD_WORKFLOW_ID)
-            export STACKS=[aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-              --stack-status-filter CREATE_COMPLETE --no-paginate --output text] 
+               https://api.memstash.io/values/OLD_WORKFLOW_ID )
+            echo "Old workflow_ID: ${OldWorkflowID}"
+
       - run:
           name: Remove old stacks and files
           command: |
@@ -527,12 +527,9 @@ jobs:
             echo "Old workflow_ID: ${OldWorkflowID}"
             if [ ${CIRCLE_WORKFLOW_ID:0:7} !=  ${OldWorkflowID} ]
             then
-              if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-              then
-                aws s3 rm s3://udapeople-${OldWorkflowID} --recursive
-                aws cloudformation delete-stack --stack-name "BE-prod-${OldWorkflowID}"
-                aws cloudformation delete-stack --stack-name "FE-prod-${OldWorkflowID}"
-              fi
+              aws s3 rm s3://udapeople-${OldWorkflowID} --recursive
+              aws cloudformation delete-stack --stack-name "BE-prod-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "FE-prod-${OldWorkflowID}"
             else
               echo"No cleanup because current WORKFLOW_ID is the same as old WORFLOW_ID !"
             fi
