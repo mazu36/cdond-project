@@ -5,13 +5,12 @@ commands:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
       curr_workflow_id:
-        type: string     
+        type: string   
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            pip install awscli
             aws s3 rm s3://udapeople-<< parameters.curr_workflow_id >> --recursive
             aws cloudformation delete-stack --stack-name "BE-prod-<< parameters.curr_workflow_id >>"
             aws cloudformation delete-stack --stack-name "FE-prod-<< parameters.curr_workflow_id >>"
@@ -20,7 +19,7 @@ commands:
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
-      # Add parameter here     
+      # Add parameter here
     steps:
       - run:
           name: Install dependencies
@@ -437,7 +436,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update curl
+            apk add --update curl aws
       - run:
           name: Get backend url
           command: |
@@ -448,8 +447,8 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            echo "curl -s "${back_URL}"
-            code_ret=$(curl -s "${back_URL}" | echo $? )
+            echo "Command: curl -s ${back_URL}" 
+            code_ret=$(curl -s "${back_URL}"" | grep '"status":"ok"' | echo $? )
             echo "code_ret : $cod_ret"
             return "${code_ret}" 
       - run:
