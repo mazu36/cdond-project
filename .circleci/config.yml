@@ -532,8 +532,7 @@ jobs:
               aws cloudformation delete-stack --stack-name "FE-prod-${OldWorkflowID}"
             else
               echo "No cleanup because no stack existe for the old WORFLOW_ID ${OldWorkflowID}!"
-            fi
-            
+            fi       
 
 workflows:
   default:
