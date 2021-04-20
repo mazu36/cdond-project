@@ -94,7 +94,9 @@ jobs:
             pwd
             ls -l
             
+            echo "Start install"
             npm install
+            echo "Start build"
             npm run build
             pwd
             ls -l
