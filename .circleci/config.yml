@@ -22,7 +22,7 @@ commands:
       # Add parameter here
     steps:
       - restore_cache:
-          keys: [backend-build-7 ]
+          keys: [backend-build-6a ]
       - run:
           name: Revert migrations
           when: on_fail
@@ -67,10 +67,10 @@ jobs:
             npm install
             npm run build
             echo "Current folder:"
-            ls -l 
+            ls -la
             cd dist
             echo "dist folder:"
-            ls -l
+            ls -la
       - save_cache:
           paths: 
             - frontend/node_modules
@@ -83,23 +83,23 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-7]
+          keys: [backend-build-6a]
       - run:
           name: Back-end build
           command: | 
             whoami
             pwd
-            ls -l
+            ls -la
             cd ~/project/backend
             pwd
-            ls -l
+            ls -la
             
             echo "Start install"
             npm install
             echo "Start build"
             npm run build
             pwd
-            ls -l
+            ls -la
 
       - save_cache:
           paths: 
@@ -125,17 +125,17 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-7]
+          keys: [backend-build-6a]
       - run:
           name: Back-end test
           command: |
             whoami
             pwd
-            ls -l
+            ls -la
 
             cd ~/project/backend
             npm run test
-            ls -l
+            ls -la
        
   scan-frontend:
     docker:
@@ -158,21 +158,21 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-7]
+          keys: [backend-build-6a]
       - run:
           name: Back-end scan
           command: |
             whoami
-            ls -l
+            ls -la
 
             cd ~/project/backend
             pwd
-            ls -l
+            ls -la
             echo "Audit:"
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
             echo "End of audit backend"
-            ls -l
+            ls -la
 
   deploy-infrastructure:
     docker:
@@ -184,7 +184,7 @@ jobs:
           command: |
             pwd
             whoami
-            ls -l
+            ls -la
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -272,7 +272,7 @@ jobs:
       - run:
           name: Verify inventory file
           command: |
-            ls -l ~/project/.circleci/ansible/
+            ls -la ~/project/.circleci/ansible/
             cat ~/project/.circleci/ansible/inventory.txt
       - run:
           name: Install dependencies
@@ -294,12 +294,12 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-7]
+          keys: [backend-build-6a]
       - run:
           name: Run migrations
           command: |
             pwd
-            ls -l
+            ls -la
             #ls /home/circleci/project
 
             echo ENVIROMENT=production >> "backend/.env"
@@ -361,6 +361,8 @@ jobs:
       - run:
           name: Get backend url
           command: |
+            pwd
+            ls -la
             echo "inventory file:"
             cat  ~/project/.circleci/ansible/inventory.txt
             BACKEND_IP=$(head -2 ~/project/.circleci/ansible/inventory.txt |tail -1)
@@ -369,9 +371,14 @@ jobs:
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL: ${API_URL}"
             echo "API_URL=$API_URL" >> frontend/.env
+            printenv
 
+            pwd
+            ls -la
+            find . -name ".env" -exec ls -l {} \;
             echo "File frontend/.env"
             cat frontend/.env
+            echo "end of step"
       - run:
           name: Rebuild frontend
           command: |
