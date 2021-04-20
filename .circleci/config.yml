@@ -22,7 +22,7 @@ commands:
       # Add parameter here
     steps:
       - restore_cache:
-          keys: [backend-build-6a ]
+          keys: [backend-build-8 ]
       - run:
           name: Revert migrations
           when: on_fail
@@ -83,7 +83,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-6a]
+          keys: [backend-build-8]
       - run:
           name: Back-end build
           command: | 
@@ -103,8 +103,10 @@ jobs:
 
       - save_cache:
           paths: 
-            - backend/node_modules
-          key: backend-build-7
+            - backend/node_modules 
+            - backend/dist
+          key: backend-build-8
+
             
   test-frontend:
     docker:
@@ -125,7 +127,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-6a]
+          keys: [backend-build-8]
       - run:
           name: Back-end test
           command: |
@@ -158,7 +160,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-6a]
+          keys: [backend-build-8]
       - run:
           name: Back-end scan
           command: |
@@ -294,7 +296,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-6a]
+          keys: [backend-build-8]
       - run:
           name: Run migrations
           command: |
