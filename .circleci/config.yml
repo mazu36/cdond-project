@@ -148,7 +148,8 @@ jobs:
           command: |
             cd ~/project/frontend 
             echo "Audit:"
-            npm audit --audit-level=critical
+            npm audit fix --audit-level=critical --force
+            npm audit --audit-level=critical 
             
   scan-backend:
     docker:
@@ -169,7 +170,19 @@ jobs:
             echo "Audit:"
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
+            echo "End of audit backend"
             ls -l
+            echo "package.json is"
+            echo "begin BE package"
+            cat package.json
+            echo "end of BE package"
+
+            echo "package-lock.json is"
+            ls -l package-lock.json
+            echo "begin BE package-lock"
+            cat package-lock.json
+            echo "end of BE package-lock"
+
       - save_cache:
           paths: 
             - backend/package.json
