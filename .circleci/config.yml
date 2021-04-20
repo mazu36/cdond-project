@@ -22,7 +22,7 @@ commands:
       # Add parameter here
     steps:
       - restore_cache:
-          keys: [backend-build-7a,backend-build-7b ]
+          keys: [backend-build-6a,backend-build-6b ]
       - run:
           name: Revert migrations
           when: on_fail
@@ -82,8 +82,8 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      #- restore_cache:
-      #    keys: [backend-build-7a]
+      - restore_cache:
+          keys: [backend-build-6a, backend-build-6b]
       - run:
           name: Back-end build
           command: | 
@@ -101,10 +101,10 @@ jobs:
             pwd
             ls -l
 
-      #- save_cache:
-      #    paths: 
-      #      - backend/node_modules
-      #    key: backend-build-7a
+      - save_cache:
+          paths: 
+            - backend/node_modules
+          key: backend-build-6a
             
   test-frontend:
     docker:
@@ -125,7 +125,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-7a]
+          keys: [backend-build-6a, backend-build-6b]
       - run:
           name: Back-end test
           command: |
@@ -158,7 +158,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-7a]
+          keys: [backend-build-6a, backend-build-6b]
       - run:
           name: Back-end scan
           command: |
@@ -174,10 +174,10 @@ jobs:
             echo "End of audit backend"
             ls -l
 
-#      - save_cache:
-#          paths: 
-#            - backend/node_modules
-#          key: backend-build-7a1
+      - save_cache:
+          paths: 
+            - backend/node_modules
+          key: backend-build-6b
 
   deploy-infrastructure:
     docker:
@@ -299,7 +299,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-7a,backend-build-7b ]
+          keys: [backend-build-6a,backend-build-6b ]
       - run:
           name: Run migrations
           command: |
