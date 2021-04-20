@@ -361,12 +361,19 @@ jobs:
       - run:
           name: Get backend url
           command: |
+            echo "inventory file:"
+            cat  ~/project/.circleci/ansible/inventory.txt
             BACKEND_IP=$(head -2 ~/project/.circleci/ansible/inventory.txt |tail -1)
+            echo "BACKEND_IP: ${BACKEND_IP}"
+
             export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
+            echo "API_URL: ${API_URL}"
             echo "API_URL=$API_URL" >> frontend/.env
+
+            echo "File frontend/.env"
+            cat frontend/.env
       - run:
-          name: Deploy frontend objects
+          name: Rebuild frontend
           command: |
             #sudo npm install webpack-dev-server -g
             cd ~/project/frontend
@@ -416,6 +423,9 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             
+            echo "File backend/.env"
+            cat backend/.env
+
             echo "File inventory.txt "
             cat ~/project/.circleci/ansible/inventory.txt 
 
