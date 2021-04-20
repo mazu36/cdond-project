@@ -82,8 +82,8 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build-7a]
+      #- restore_cache:
+      #    keys: [backend-build-7a]
       - run:
           name: Back-end build
           command: | 
@@ -101,10 +101,10 @@ jobs:
             pwd
             ls -l
 
-      - save_cache:
-          paths: 
-            - backend/node_modules
-          key: backend-build-7a
+      #- save_cache:
+      #    paths: 
+      #      - backend/node_modules
+      #    key: backend-build-7a
             
   test-frontend:
     docker:
