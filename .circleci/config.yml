@@ -83,7 +83,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-7a, backend-build-7b]
+          keys: [backend-build-6a]
       - run:
           name: Back-end build
           command: | 
@@ -104,7 +104,6 @@ jobs:
       - save_cache:
           paths: 
             - backend/node_modules
-            - backend/dist
           key: backend-build-7a
             
   test-frontend:
@@ -126,7 +125,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-7a, backend-build-7b]
+          keys: [backend-build-7a]
       - run:
           name: Back-end test
           command: |
@@ -159,7 +158,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-7a,backend-build-7b ]
+          keys: [backend-build-7a]
       - run:
           name: Back-end scan
           command: |
@@ -175,11 +174,10 @@ jobs:
             echo "End of audit backend"
             ls -l
 
-      - save_cache:
-          paths: 
-            - backend/package.json
-            - backend/package-lock.json
-          key: backend-build-7b
+#      - save_cache:
+#          paths: 
+#            - backend/node_modules
+#          key: backend-build-7a1
 
   deploy-infrastructure:
     docker:
