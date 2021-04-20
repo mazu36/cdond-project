@@ -22,7 +22,7 @@ commands:
       # Add parameter here
     steps:
       - restore_cache:
-          keys: [backend-build-6a,backend-build-6b ]
+          keys: [backend-build-7a,backend-build-7b ]
       - run:
           name: Revert migrations
           when: on_fail
@@ -83,7 +83,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-6a, backend-build-6b]
+          keys: [backend-build-7a, backend-build-7b]
       - run:
           name: Back-end build
           command: | 
@@ -103,7 +103,7 @@ jobs:
           paths: 
             - backend/node_modules
             - backend/dist
-          key: backend-build-6a
+          key: backend-build-7a
             
   test-frontend:
     docker:
@@ -124,7 +124,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-6a, backend-build-6b]
+          keys: [backend-build-7a, backend-build-7b]
       - run:
           name: Back-end test
           command: |
@@ -157,7 +157,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-6a,backend-build-6b ]
+          keys: [backend-build-7a,backend-build-7b ]
       - run:
           name: Back-end scan
           command: |
@@ -172,22 +172,12 @@ jobs:
             npm audit --audit-level=critical
             echo "End of audit backend"
             ls -l
-            echo "package.json is"
-            echo "begin BE package"
-            cat package.json
-            echo "end of BE package"
-
-            echo "package-lock.json is"
-            ls -l package-lock.json
-            echo "begin BE package-lock"
-            cat package-lock.json
-            echo "end of BE package-lock"
 
       - save_cache:
           paths: 
             - backend/package.json
             - backend/package-lock.json
-          key: backend-build-6b
+          key: backend-build-7b
 
   deploy-infrastructure:
     docker:
@@ -309,7 +299,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-6a,backend-build-6b ]
+          keys: [backend-build-7a,backend-build-7b ]
       - run:
           name: Run migrations
           command: |
